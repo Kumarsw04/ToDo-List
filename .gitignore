@@ -1,75 +1,191 @@
-# OSX
-#
-.DS_Store
 
-# Xcode
-#
-build/
+# ============================================
+# TodoList - Git Ignore Configuration
+# React Native CLI + React Vite + Express
+# InfluxDB Cloud + ExcelJS
+# ============================================
+
+# --------------------------------------------
+# Operating System
+# --------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+
+# --------------------------------------------
+# Environment Variables / Secrets
+# --------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Private keys and certificates
+*.pem
+*.p12
+*.pfx
+*.key
+*.keystore
+*.jks
+
+# Keep React Native's standard debug keystore
+!debug.keystore
+
+# --------------------------------------------
+# Node.js Dependencies
+# --------------------------------------------
+node_modules/
+**/node_modules/
+
+# Package manager logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --------------------------------------------
+# React + Vite Website
+# --------------------------------------------
+web/dist/
+web/dist-ssr/
+web/.vite/
+web/.cache/
+
+# TypeScript incremental build files
+*.tsbuildinfo
+
+# --------------------------------------------
+# Express Backend
+# --------------------------------------------
+backend/logs/
+backend/tmp/
+backend/temp/
+backend/uploads/
+
+# --------------------------------------------
+# Excel Activity Logs
+# --------------------------------------------
+backend/data/*.xlsx
+backend/data/*.xls
+backend/data/*.csv
+
+# Excel temporary / lock files
+~$*.xlsx
+~$*.xls
+
+# Keep the data directory in Git
+!backend/data/.gitkeep
+
+# --------------------------------------------
+# React Native / Metro
+# --------------------------------------------
+*.jsbundle
+.metro-health-check*
+.metro-cache/
+.expo/
+
+# --------------------------------------------
+# Android / IntelliJ
+# --------------------------------------------
+**/build/
+**/.gradle/
+**/.cxx/
+**/.kotlin/
+
+.idea/
+*.iml
+*.hprof
+
+android/local.properties
+local.properties
+
+# Android release artifacts
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# --------------------------------------------
+# iOS / Xcode
+# --------------------------------------------
 *.pbxuser
 !default.pbxuser
+
 *.mode1v3
 !default.mode1v3
+
 *.mode2v3
 !default.mode2v3
+
 *.perspectivev3
 !default.perspectivev3
-xcuserdata
+
+xcuserdata/
 *.xccheckout
 *.moved-aside
-DerivedData
+DerivedData/
 *.hmap
 *.ipa
 *.xcuserstate
+
 **/.xcode.env.local
 
-# Android/IntelliJ
-#
-build/
-.idea
-.gradle
-local.properties
-*.iml
-*.hprof
-.cxx/
-*.keystore
-!debug.keystore
-.kotlin/
-
-# node.js
-#
-node_modules/
-npm-debug.log
-yarn-error.log
-
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/
-
-**/fastlane/report.xml
-**/fastlane/Preview.html
-**/fastlane/screenshots
-**/fastlane/test_output
-
-# Bundle artifact
-*.jsbundle
-
-# Ruby / CocoaPods
+# CocoaPods
 **/Pods/
+
+# --------------------------------------------
+# Ruby / Bundler
+# --------------------------------------------
 /vendor/bundle/
 
-# Temporary files created by Metro to check the health of the file watcher
-.metro-health-check*
+# --------------------------------------------
+# Fastlane
+# --------------------------------------------
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots/
+**/fastlane/test_output/
 
-# testing
-/coverage
+# --------------------------------------------
+# Testing / Coverage
+# --------------------------------------------
+coverage/
+**/coverage/
+.nyc_output/
 
+# --------------------------------------------
 # Yarn
+# --------------------------------------------
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# --------------------------------------------
+# Temporary Files
+# --------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.log
+
+# ============================================
+# Files that SHOULD be committed:
+#
+# README.md
+# package.json
+# package-lock.json
+# App.tsx
+# android/ source and configuration
+# ios/ source and configuration (if present)
+# web/src/
+# web/package.json
+# backend/src/
+# backend/package.json
+# backend/.env.example
+# backend/data/.gitkeep
+# ============================================
