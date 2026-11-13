@@ -1,97 +1,586 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# TodoList — Full Stack Web & Android Application
 
-# Getting Started
+A full-stack To-Do List application built using **React, React Native CLI, Node.js, Express, and InfluxDB Cloud**, with automatic Excel-based timestamped activity logging.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+The project provides a web application and a native Android application that communicate with the same Express backend. Task operations are stored as timestamped events in InfluxDB Cloud, while an Excel workbook maintains an activity history.
 
-## Step 1: Start Metro
+## Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Create new tasks from the website or Android application.
+- View tasks stored in the shared backend.
+- Mark tasks as completed.
+- Reopen completed tasks.
+- Delete tasks.
+- Display task completion progress.
+- Refresh the task list to retrieve updates from another platform.
+- Store task events in InfluxDB Cloud.
+- Automatically log task activities in an Excel (`.xlsx`) workbook.
+- Record timestamps, task IDs, actions, test user IDs, and platform information.
+- Rebuild the Excel activity log from retained InfluxDB events.
+- Use a single VS Code workspace for web, Android, and backend development.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Technology Stack
 
-```sh
-# Using npm
-npm start
+| Layer | Technologies |
+|---|---|
+| Web frontend | React, Vite, TypeScript, CSS |
+| Mobile frontend | React Native CLI, TypeScript |
+| Mobile platform | Android |
+| Backend | Node.js, Express.js |
+| Database | InfluxDB Cloud 2.x (TSM, Flux API) |
+| Excel logging | ExcelJS |
+| API communication | REST API, Fetch API |
+| Development tools | VS Code, Android Studio, Node.js, npm |
+| Version control | Git and GitHub |
 
-# OR using Yarn
-yarn start
+The Android application uses **React Native CLI without Expo**.
+
+## System Architecture
+
+```text
+              React + Vite Website
+                 localhost:5173
+                       |
+                       |
+                       v
+                Express REST API
+                 localhost:5000
+                       ^
+                       |
+                       |
+             React Native Android App
+              (ADB reverse forwarding)
+
+                       |
+                       v
+                 InfluxDB Cloud
+                 Primary Database
+                       |
+                       v
+                Excel Activity Log
+                task_activity.xlsx
 ```
 
-## Step 2: Build and run your app
+Both frontend applications send requests to the same Express backend.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+The backend manages task operations, stores timestamped events in InfluxDB Cloud, and updates the Excel activity log after successful database writes.
 
-### Android
+## Project Folder Structure
 
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```text
+TodoList/
+|
+|-- android/                     # Native Android configuration
+|-- ios/                         # Native iOS project (if generated)
+|
+|-- App.tsx                      # React Native Android interface
+|-- index.js                     # React Native entry point
+|-- app.json                     # React Native configuration
+|-- babel.config.js
+|-- metro.config.js
+|-- tsconfig.json
+|
+|-- web/
+|   |-- public/
+|   |-- src/
+|   |   |-- assets/
+|   |   |-- App.tsx              # Website interface and API integration
+|   |   |-- App.css              # Website styling
+|   |   |-- index.css            # Global styles
+|   |   |-- main.tsx             # Website entry point
+|   |
+|   |-- index.html
+|   |-- vite.config.ts
+|   |-- package.json
+|
+|-- backend/
+|   |-- src/
+|   |   |-- server.js            # Express REST API
+|   |   |-- influx.js            # InfluxDB operations
+|   |   |-- excel.js             # Excel logging
+|   |   |-- sync-excel.js        # Excel synchronization
+|   |
+|   |-- data/
+|   |   |-- task_activity.xlsx   # Generated locally
+|   |
+|   |-- .env                     # Local credentials (not committed)
+|   |-- package.json
+|
+|-- __tests__/
+|-- package.json
+|-- package-lock.json
+|-- .gitignore
+|-- README.md
 ```
 
-### iOS
+Generated folders such as `node_modules`, Android build output, and local environment files should not be committed to Git.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## Prerequisites
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Before running this project, install:
 
-```sh
-bundle install
+1. **Node.js and npm** — use an LTS version compatible with your React Native project.
+2. **Git** — for cloning and version control.
+3. **Visual Studio Code** — recommended development editor.
+4. **Android Studio** — including the Android SDK, platform tools, and a compatible emulator.
+5. **Java Development Kit (JDK)** — use the version supported by your React Native and Android Gradle Plugin versions.
+6. **InfluxDB Cloud account** — with a TSM 2.x organization, bucket, and API token.
+
+Follow the official [React Native environment setup guide](https://reactnative.dev/docs/set-up-your-environment) for Android SDK, JDK, and environment-variable configuration.
+
+The commands below assume Windows PowerShell.
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+cd YOUR_REPOSITORY
 ```
 
-Then, and every time you update your native dependencies, run:
+Replace the placeholders with your actual GitHub username and repository name after publishing the project.
 
-```sh
-bundle exec pod install
+### 2. Install React Native dependencies
+
+From the project root:
+
+```bash
+npm install
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### 3. Install website dependencies
 
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+```bash
+cd web
+npm install
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### 4. Install backend dependencies
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+cd ../backend
+npm install
+```
 
-## Step 3: Modify your app
+If setting up backend dependencies manually, the project uses:
 
-Now that you have successfully run the app, let's make changes!
+```bash
+npm install express cors dotenv @influxdata/influxdb-client exceljs
+npm install --save-dev nodemon
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## InfluxDB Cloud Configuration
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+Create a `.env` file inside the `backend` directory:
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+```text
+backend/.env
+```
 
-## Congratulations! :tada:
+Add the following configuration:
 
-You've successfully run and modified your React Native App. :partying_face:
+```dotenv
+PORT=5000
 
-### Now what?
+INFLUX_URL=https://YOUR_INFLUXDB_CLOUD_ENDPOINT
+INFLUX_TOKEN=YOUR_INFLUXDB_API_TOKEN
+INFLUX_ORG=YOUR_ORGANIZATION
+INFLUX_BUCKET=todo_tasks
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+Replace the placeholder values with your actual InfluxDB Cloud configuration.
 
-# Troubleshooting
+The token must have the appropriate permissions to read and write data in the configured bucket.
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+**Security:** Never commit `.env`, API tokens, passwords, or private credentials to GitHub.
 
-# Learn More
+## How to Run the Project
 
-To learn more about React Native, take a look at the following resources:
+The backend, website, and Android application run independently but communicate with each other.
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+You can run everything from **one VS Code window using multiple integrated terminals**.
+
+### Terminal 1 — Start Express Backend
+
+From the project root:
+
+```bash
+cd backend
+npm run dev
+```
+
+The backend runs at:
+
+```text
+http://localhost:5000
+```
+
+Test the health endpoint:
+
+```text
+http://localhost:5000/api/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "Backend running",
+  "service": "TodoList API"
+}
+```
+
+### Terminal 2 — Start React Website
+
+From the project root:
+
+```bash
+cd web
+npm run dev
+```
+
+Open the local URL displayed by Vite, normally:
+
+```text
+http://localhost:5173
+```
+
+The website communicates with the Express API using:
+
+```typescript
+const API_URL = 'http://localhost:5000/api';
+```
+
+### Terminal 3 — Start React Native Metro
+
+From the project root:
+
+```bash
+npx react-native start
+```
+
+Keep Metro running while developing the Android application.
+
+### Terminal 4 — Run Android Application
+
+Start your Android emulator or connect an Android device with USB debugging enabled.
+
+Check connected devices:
+
+```powershell
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" devices
+```
+
+Configure ADB reverse forwarding:
+
+```powershell
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:5000 tcp:5000
+```
+
+This allows the Android application to access the Express backend running on your development computer.
+
+With ADB reverse forwarding enabled, the React Native application uses:
+
+```typescript
+const API_URL = 'http://localhost:5000/api';
+```
+
+Finally, run:
+
+```bash
+npx react-native run-android
+```
+
+**Note:** ADB reverse forwarding may need to be configured again after reconnecting or restarting the Android device. `localhost` works in this setup because of the forwarding configuration; it does not automatically work for every physical-device or production deployment.
+
+## REST API Endpoints
+
+Base URL:
+
+```text
+http://localhost:5000/api
+```
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/health` | Check backend availability |
+| GET | `/tasks` | Retrieve current tasks |
+| POST | `/tasks` | Create a new task |
+| PATCH | `/tasks/:id` | Complete or reopen a task |
+| DELETE | `/tasks/:id` | Delete a task |
+
+### Create Task
+
+**Request**
+
+```http
+POST /api/tasks
+Content-Type: application/json
+x-test-user-id: user-web-01
+x-client-source: web
+```
+
+```json
+{
+  "title": "Complete React Native project"
+}
+```
+
+The backend creates a unique task ID and stores a `created` event.
+
+### Update Task
+
+**Request**
+
+```http
+PATCH /api/tasks/TASK_ID
+Content-Type: application/json
+```
+
+```json
+{
+  "completed": true
+}
+```
+
+Set `completed` to `false` to reopen the task.
+
+### Delete Task
+
+**Request**
+
+```http
+DELETE /api/tasks/TASK_ID
+```
+
+The backend records a `deleted` event in InfluxDB. Deleted tasks are excluded from the current task list, while their retained event history remains available for activity logging.
+
+## InfluxDB Data Storage
+
+InfluxDB Cloud is the primary database.
+
+The application uses an event-based approach, recording task activity in the measurement:
+
+```text
+todo_events
+```
+
+Each event contains information such as:
+
+| Field | Description |
+|---|---|
+| taskId | Unique task identifier |
+| eventId | Unique event identifier for newly recorded events |
+| userId | Test user identifier |
+| source | Platform (`web` or `android`) |
+| title | Task title |
+| action | Task activity |
+| _time | Event timestamp |
+
+Supported actions:
+
+- `created`
+- `completed`
+- `reopened`
+- `deleted`
+
+The backend reconstructs the current task list from the recorded events.
+
+**Current limitation:** The implementation queries retained event history to reconstruct task state. This is suitable for a small development project but will need optimization as the dataset grows.
+
+## Automatic Excel Timestamp Logging
+
+In addition to InfluxDB Cloud, the backend maintains an Excel activity workbook:
+
+```text
+backend/data/task_activity.xlsx
+```
+
+The workbook is created automatically when task events are logged or when the synchronization command runs.
+
+### Excel Columns
+
+| Column | Description |
+|---|---|
+| Event ID | Unique identifier for the activity event |
+| Timestamp (UTC) | Date and time of the event |
+| Task ID | Unique task identifier |
+| Task Title | Task description |
+| Action | Created, completed, reopened, or deleted |
+| User ID | Test user responsible for the action |
+| Platform | Website or Android application |
+
+Each successful task operation creates a new activity entry instead of overwriting previous events.
+
+### Synchronize Excel with InfluxDB
+
+From the `backend` directory:
+
+```bash
+npm run sync:excel
+```
+
+This command reads the event history retained in InfluxDB and rebuilds the Excel workbook.
+
+It is useful for recovering missed Excel updates or importing previously stored task events.
+
+**Important notes:**
+
+- Close the Excel workbook before running operations that write to it, because Excel may lock the file.
+- InfluxDB remains the primary source of truth.
+- Excel synchronization replaces the workbook's generated activity data.
+- The workbook is intended for local development and reporting, not as the application's primary database.
+- The Excel logging implementation serializes writes within a single Node.js backend process.
+
+## Cross-Platform Synchronization
+
+Both the website and Android application communicate with the same backend.
+
+Example workflow:
+
+1. Create a task on the website.
+2. Refresh the Android application to retrieve it.
+3. Complete the task on Android.
+4. Refresh the website to see the updated status.
+5. Delete the task from either platform.
+6. Inspect InfluxDB and the Excel activity log to review the recorded events.
+
+The current implementation uses manual refresh or reload to retrieve changes. Real-time synchronization using WebSockets or another push mechanism is not yet implemented.
+
+## Testing the Backend
+
+### Check backend health
+
+```powershell
+curl.exe -i http://localhost:5000/api/health
+```
+
+### Retrieve tasks
+
+```powershell
+curl.exe -i http://localhost:5000/api/tasks
+```
+
+### Create a test task using PowerShell
+
+```powershell
+$body = @{ title = "Testing Excel Timestamp" } | ConvertTo-Json
+
+Invoke-RestMethod `
+  -Uri "http://localhost:5000/api/tasks" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Headers @{
+    "x-test-user-id" = "user-web-01"
+    "x-client-source" = "web"
+  } `
+  -Body $body
+```
+
+After successful creation, check:
+
+```text
+backend/data/task_activity.xlsx
+```
+
+The task creation event should be recorded with its timestamp and source information.
+
+## Troubleshooting
+
+### Website cannot reach the backend
+
+Verify that Express is running on port `5000` and that the frontend API URL matches the backend address.
+
+### Android cannot connect to Express
+
+Verify that the device is connected through ADB, then run:
+
+```powershell
+& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:5000 tcp:5000
+```
+
+For local HTTP development, ensure Android internet permission and the appropriate cleartext traffic configuration are present in `AndroidManifest.xml`.
+
+### InfluxDB requests fail
+
+Check the backend terminal for error details. Verify:
+
+- InfluxDB Cloud endpoint
+- API token and permissions
+- Organization
+- Bucket name
+- Internet connectivity
+
+### Excel file is not updating
+
+Ensure the workbook is closed and check the backend terminal for Excel logging warnings.
+
+To rebuild the workbook:
+
+```bash
+cd backend
+npm run sync:excel
+```
+
+### Android application displays a blank screen
+
+Check Metro for JavaScript errors and rebuild the application if necessary:
+
+```bash
+npx react-native start --reset-cache
+```
+
+In a separate terminal:
+
+```bash
+npx react-native run-android
+```
+
+## Security and Current Limitations
+
+This project is currently configured for local development and testing.
+
+- `x-test-user-id` is a temporary identifier, not secure authentication.
+- Tasks currently belong to a shared task list rather than isolated user accounts.
+- The API is not yet protected by authentication and authorization.
+- Local HTTP addresses are intended for development only.
+- Environment credentials must remain outside version control.
+- The Excel workbook is a generated local artifact.
+- Event queries and Excel logging will require additional optimization for production-scale workloads.
+
+Do not expose the development backend publicly without implementing appropriate security controls.
+
+## Future Improvements
+
+Potential improvements include:
+
+- User registration and login.
+- JWT-based authentication and authorization.
+- Separate task lists for individual users.
+- Real-time synchronization between website and Android.
+- Task priorities, categories, and due dates.
+- Search and filtering.
+- Improved InfluxDB query performance.
+- Excel and CSV export endpoints.
+- Automated tests and CI/CD.
+- Production deployment for the website and backend.
+- Android release builds.
+
+## License
+
+No license has been specified yet. Add a `LICENSE` file if you intend to define how others may use, modify, or distribute this project.
+
+---
+
+**Project:** TodoList
+
+**Frontend:** React + Vite and React Native CLI
+
+**Backend:** Node.js + Express
+
+**Database:** InfluxDB Cloud 2.x
+
+**Activity Logging:** ExcelJS / Microsoft Excel
+
+**Development Environment:** Visual Studio Code and Android Studio
