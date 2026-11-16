@@ -110,6 +110,12 @@ TodoList/
 |-- package.json
 |-- package-lock.json
 |-- .gitignore
+<<<<<<< HEAD
+=======
+|-- .github/
+|   |-- workflows/
+|       |-- ci.yml               # GitHub Actions CI pipeline
+>>>>>>> 01558f7 (docs: update README and add CI/CD workflow)
 |-- README.md
 ```
 
@@ -135,11 +141,19 @@ The commands below assume Windows PowerShell.
 ### 1. Clone the repository
 
 ```bash
+<<<<<<< HEAD
 git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
 cd YOUR_REPOSITORY
 ```
 
 Replace the placeholders with your actual GitHub username and repository name after publishing the project.
+=======
+git clone https://github.com/Kumarsw04/ToDo-List.git
+cd ToDo-List
+```
+
+This clones the project from the GitHub repository.
+>>>>>>> 01558f7 (docs: update README and add CI/CD workflow)
 
 ### 2. Install React Native dependencies
 
@@ -537,6 +551,58 @@ In a separate terminal:
 npx react-native run-android
 ```
 
+<<<<<<< HEAD
+=======
+## CI/CD — GitHub Actions
+
+The repository includes a GitHub Actions workflow at `.github/workflows/ci.yml`.
+It runs on every push to `main`, on pull requests targeting `main`, and when manually started from the **Actions** tab.
+
+| Job | Checks | Output |
+|---|---|---|
+| Web | `npm ci`, available lint/test scripts, Vite production build | `web-dist` artifact |
+| Backend | `npm ci`, JavaScript syntax checks, available tests | Job result |
+| Android | `npm ci`, Android SDK/JDK setup, Gradle `assembleDebug` | `android-debug-apk` artifact |
+
+### CI pipeline
+
+```text
+Push / Pull Request / Manual Trigger
+                 |
+                 v
+        GitHub Actions CI
+                 |
+      +----------+----------+
+      |          |          |
+      v          v          v
+    Web       Backend     Android
+  checks      checks     APK build
+      |          |          |
+      v          v          v
+  web-dist    Results   debug APK
+      +----------+----------+
+                 |
+                 v
+         Review CI results
+```
+
+### How to run and inspect the workflow
+
+1. Commit `.github/workflows/ci.yml` and push it to `main`.
+2. Open [GitHub Actions](https://github.com/Kumarsw04/ToDo-List/actions).
+3. Select **ToDo List CI** to inspect the jobs, or use **Run workflow** to start it manually.
+4. After a successful run, download `web-dist` or `android-debug-apk` from the workflow run's **Artifacts** section.
+
+### Build requirements and limitations
+
+- Commit `package-lock.json` in the root, `web/`, and `backend/` so `npm ci` can install reproducibly.
+- The Android job uses JDK 17 and NDK `27.1.12297006`; verify these match the project's Android Gradle configuration. Adjust the workflow if the project's React Native version requires a different Java/SDK version.
+- Optional lint/test commands run only when corresponding scripts exist. **Skipping an absent test script does not mean tests passed.** Add automated unit and integration tests to strengthen the pipeline.
+- CI does not connect to InfluxDB Cloud or write Excel activity data. Integration tests requiring InfluxDB should use dedicated test resources and GitHub Actions secrets.
+- The APK is an **unsigned-for-release debug build**, intended for testing, not Google Play distribution.
+- **Continuous deployment is not yet configured.** A hosting target, production environment variables, release signing, and deployment credentials are needed before automatic web/backend deployment or Android releases can be enabled.
+
+>>>>>>> 01558f7 (docs: update README and add CI/CD workflow)
 ## Security and Current Limitations
 
 This project is currently configured for local development and testing.
@@ -563,7 +629,12 @@ Potential improvements include:
 - Search and filtering.
 - Improved InfluxDB query performance.
 - Excel and CSV export endpoints.
+<<<<<<< HEAD
 - Automated tests and CI/CD.
+=======
+- Expanded automated unit and integration tests.
+- Automated deployment to production hosting.
+>>>>>>> 01558f7 (docs: update README and add CI/CD workflow)
 - Production deployment for the website and backend.
 - Android release builds.
 
